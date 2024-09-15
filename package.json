@@ -1,0 +1,22 @@
+{
+  "name": "shammi-uncut",
+  "version": "1.0.0",
+  "description": "Shammi_Uncut_Notification_Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start-dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "John Kenneth Steinnes",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "axios-cookiejar-support": "^5.0.2",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.15",
+    "nodemon": "^3.1.4",
+    "tough-cookie": "^4.1.4"
+  }
+}
