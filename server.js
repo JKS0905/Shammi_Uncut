@@ -22,6 +22,7 @@ const client = new Client({
     ssl: { rejectUnauthorized: false } // Enable SSL if required
 });
 
+
 async function setupDatabase() {
     try {
         await client.connect();
