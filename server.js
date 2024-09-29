@@ -2,11 +2,11 @@ require('dotenv').config();
 const { checkForNewEpisode } = require("./checkForNewEpisode");
 const { sendEmail } = require("./emailService");
 const { connectToDatabase,
-        insertEpisodeLog, 
-        updateEpisode, 
-        deleteEpisode,
-        fetchAllEpisodes,
-        deleteColumn,
+        dbinsertEpisodeLog, 
+        dbUpdateEpisode, 
+        dbDeleteEpisode,
+        dbFetchAllEpisodes,
+        dbDeleteColumn,
         dbGetEpisodeDetails,
         dbUpdateEpisodeDetails
 } = require("./database")
@@ -36,7 +36,6 @@ async function main() {
     while (true) {
         const episodeDetails = await dbGetEpisodeDetails();
         const { episode_id, episode } = episodeDetails;
-
         const baseUrl = BASE_URL;
         const episodeUrl = `${baseUrl}${episode_id}`;
 
@@ -48,10 +47,13 @@ async function main() {
             let currentDateTime = getFormattedDateTime();
             let newEpisodeId = episode_id + 1;
             let newEpisode = episode + 1;
-            await dbUpdateEpisodeDetails(newEpisodeId, newEpisode, currentDateTime);
-            await insertEpisodeLog(newEpisodeId, newEpisode, currentDateTime);
 
-            // Create log in Database
+            // Logs the currert information in database
+            await dbinsertEpisodeLog(episode_id, episode, currentDateTime);
+
+            // Logs the updtated information in database
+            await dbUpdateEpisodeDetails(newEpisodeId, newEpisode, currentDateTime);
+            
 
 
 
@@ -63,19 +65,18 @@ async function main() {
 }
 
 //Runs the main function in an infinite loop.
-//main()
+main()
 
 //sendEmail({ recivingEmail: RECIVING_EMAIL, message: "There is a new episode available in shammiUncut!" })
 
-async function testing() {
-    //await connectToDatabase();
-    //const episodeDetails = await dbGetEpisodeDetails();
-    //const { episode_id, episode, date } = episodeDetails;
-    
-    //console.log(currentDateTime);
-}
-
-testing();
+//async function testing() {
+//    await connectToDatabase();
+//    const episodeDetails = await dbGetEpisodeDetails();
+//    const { episode_id, episode, date } = episodeDetails;
+//    console.log(currentDateTime);
+//}
+//
+//testing();
 
 
 //insertEpisodeLog(1176, 202, "29/09/2024 - 01:42")

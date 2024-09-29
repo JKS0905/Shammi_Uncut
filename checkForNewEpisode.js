@@ -3,20 +3,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const { CookieJar } = require('tough-cookie');
 const { wrapper } = require('axios-cookiejar-support');
-const { connectToDatabase,
-    insertEpisode, 
-    updateEpisode, 
-    deleteEpisode,
-    fetchAllEpisodes,
-    deleteColumn,
-    dbGetEpisodeId
-} = require("./database")
-
-const {
-    LOGIN_URL,
-    EMAIL,
-    PASSWORD
-} = process.env;
+const { LOGIN_URL, EMAIL, PASSWORD } = process.env;
 
 async function checkNewEpisodeUrl(url, axiosInstance) {
     try {

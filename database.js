@@ -15,7 +15,7 @@ async function connectToDatabase() {
     }
 }
 
-async function insertEpisodeLog(episodeId, episodeNumber, dateTime) {
+async function dbinsertEpisodeLog(episodeId, episodeNumber, dateTime) {
     try {
         // SQL query to insert a new row in the table with all the fields
         const insertQuery = `
@@ -32,7 +32,7 @@ async function insertEpisodeLog(episodeId, episodeNumber, dateTime) {
     }
 };
 
-async function updateEpisode(oldEpisodeNumber, newEpisodeNumber) {
+async function dbUpdateEpisode(oldEpisodeNumber, newEpisodeNumber) {
     try {
         const updateQuery = `
             UPDATE shammi_uncut 
@@ -53,7 +53,7 @@ async function updateEpisode(oldEpisodeNumber, newEpisodeNumber) {
     }
 };
 
-async function deleteEpisode(episodeNumber) {
+async function dbDeleteEpisode(episodeNumber) {
     try {
         const deleteQuery = `
         DELETE FROM shammi_uncut 
@@ -70,7 +70,7 @@ async function deleteEpisode(episodeNumber) {
     }
 };
 
-async function fetchAllEpisodes() {
+async function dbFetchAllEpisodes() {
     try {
         // SQL query to select all rows
         const selectQuery = `SELECT * FROM shammi_uncut;`;
@@ -85,7 +85,7 @@ async function fetchAllEpisodes() {
     }
 };
 
-async function deleteColumn(columnName) {
+async function dbDeleteColumn(columnName) {
     try {
         // SQL query to drop the specified column
         const dropColumnQuery = `
@@ -147,11 +147,11 @@ async function dbUpdateEpisodeDetails(newEpisodeId, newEpisodeNumber, dateTime) 
 }
 
 module.exports = { connectToDatabase,
-                   insertEpisodeLog, 
-                   updateEpisode, 
-                   deleteEpisode,
-                   fetchAllEpisodes,
-                   deleteColumn,
+                   dbinsertEpisodeLog, 
+                   dbUpdateEpisode, 
+                   dbDeleteEpisode,
+                   dbFetchAllEpisodes,
+                   dbDeleteColumn,
                    dbGetEpisodeDetails,
                    dbUpdateEpisodeDetails
-                }
+                };
