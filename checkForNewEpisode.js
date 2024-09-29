@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // Load environment variables from .env file
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { CookieJar } = require('tough-cookie');

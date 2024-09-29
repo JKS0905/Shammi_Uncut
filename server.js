@@ -1,12 +1,8 @@
-require('dotenv').config();
+require('dotenv').config(); // Load environment variables from .env file
 const { checkForNewEpisode } = require("./checkForNewEpisode");
-const { sendEmail } = require("./emailService");
+const { getFormattedDateTime, sendEmailNotification } = require("./utils");
 const { connectToDatabase,
         dbinsertEpisodeLog, 
-        dbUpdateEpisode, 
-        dbDeleteEpisode,
-        dbFetchAllEpisodes,
-        dbDeleteColumn,
         dbGetEpisodeDetails,
         dbUpdateEpisodeDetails
 } = require("./database")
@@ -15,19 +11,6 @@ const {
     RECIVING_EMAIL,
     BASE_URL
 } = process.env;
-
-function getFormattedDateTime() {
-    const now = new Date();
-
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // getMonth() is 0-based, so add 1
-    const year = now.getFullYear();
-
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-
-    return `${day}/${month}/${year} - ${hours}:${minutes}`;
-};
 
 async function main() {
     // Connects to the Database
@@ -53,33 +36,28 @@ async function main() {
 
             // Logs the updtated information in database
             await dbUpdateEpisodeDetails(newEpisodeId, newEpisode, currentDateTime);
-            
 
-
+            const emailData = {
+                title: "Shammi Uncut",
+                subject: 'New Episode!',
+                message: `Episode ${episode} is now available at Shammi Uncut`,
+                email: RECIVING_EMAIL 
+            }
+            // Send Email Post request
+            await sendEmailNotification(emailData);
 
         } else {
             console.log("NO New Episode");
         }
-        await new Promise(resovle => setTimeout(resovle, 60 * 1000));
+        await new Promise(resovle => setTimeout(resovle, 600 * 1000));
     }
 }
-
 //Runs the main function in an infinite loop.
-main()
-
-//sendEmail({ recivingEmail: RECIVING_EMAIL, message: "There is a new episode available in shammiUncut!" })
-
-//async function testing() {
-//    await connectToDatabase();
-//    const episodeDetails = await dbGetEpisodeDetails();
-//    const { episode_id, episode, date } = episodeDetails;
-//    console.log(currentDateTime);
-//}
-//
-//testing();
+//main()
 
 
-//insertEpisodeLog(1176, 202, "29/09/2024 - 01:42")
+
+
 
 
 

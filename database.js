@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // Load environment variables from .env file
 const { Client } = require('pg');
 
 const client = new Client({
@@ -13,7 +13,7 @@ async function connectToDatabase() {
     } catch (error) {
         console.error('Database Connection error:', error.stack);
     }
-}
+};
 
 async function dbinsertEpisodeLog(episodeId, episodeNumber, dateTime) {
     try {
@@ -29,76 +29,6 @@ async function dbinsertEpisodeLog(episodeId, episodeNumber, dateTime) {
         
     } catch (err) {
         console.error('Error inserting episode log:', err.stack);
-    }
-};
-
-async function dbUpdateEpisode(oldEpisodeNumber, newEpisodeNumber) {
-    try {
-        const updateQuery = `
-            UPDATE shammi_uncut 
-            SET episode = $1 
-            WHERE episode = $2; 
-        `;
-        
-        const result = await client.query(updateQuery, [newEpisodeNumber, oldEpisodeNumber]);
-        
-        if (result.rowCount > 0) {
-            console.log(`Episode ${oldEpisodeNumber} updated to ${newEpisodeNumber} successfully.`);
-        } else {
-            console.log(`No episode found with number ${oldEpisodeNumber}.`);
-        }
-        
-    } catch (err) {
-        console.error('Error updating episode:', err.stack);
-    }
-};
-
-async function dbDeleteEpisode(episodeNumber) {
-    try {
-        const deleteQuery = `
-        DELETE FROM shammi_uncut 
-        WHERE episode = $1;`;
-
-        const result = await client.query(deleteQuery, [episodeNumber]);
-        if (result.rowCount > 0) {
-            console.log(`Episode ${episodeNumber} deleted successfully`);
-        } else {
-            console.log(`Episode ${episodeNumber} not found`);
-        }
-    } catch (err) {
-        console.error('Error deleting episode:', err.stack);
-    }
-};
-
-async function dbFetchAllEpisodes() {
-    try {
-        // SQL query to select all rows
-        const selectQuery = `SELECT * FROM shammi_uncut;`;
-        // Execute the query
-        const res = await client.query(selectQuery);
-        
-        // Log the rows retrieved
-        console.log('All Episodes:', res.rows);
-        
-    } catch (err) {
-        console.error('Error fetching episodes:', err.stack);
-    }
-};
-
-async function dbDeleteColumn(columnName) {
-    try {
-        // SQL query to drop the specified column
-        const dropColumnQuery = `
-            ALTER TABLE shammi_uncut_episodes
-            DROP COLUMN ${columnName};
-        `;
-        
-        // Execute the query
-        await client.query(dropColumnQuery);
-        console.log(`Column "${columnName}" deleted successfully`);
-        
-    } catch (err) {
-        console.error('Error deleting column:', err.stack);
     }
 };
 
@@ -144,14 +74,10 @@ async function dbUpdateEpisodeDetails(newEpisodeId, newEpisodeNumber, dateTime) 
     } catch (error) {
         console.error('Error updating episode:', error.stack);
     }
-}
+};
 
 module.exports = { connectToDatabase,
                    dbinsertEpisodeLog, 
-                   dbUpdateEpisode, 
-                   dbDeleteEpisode,
-                   dbFetchAllEpisodes,
-                   dbDeleteColumn,
                    dbGetEpisodeDetails,
                    dbUpdateEpisodeDetails
                 };
