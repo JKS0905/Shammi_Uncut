@@ -11,15 +11,13 @@ async function checkNewEpisodeUrl(url, axiosInstance) {
         const response = await axiosInstance.get(url)
 
         if (response.status === 200) {
-            console.log(`URL ${url} returned status 200`); // remove after testing
             return true;
         } else {
-            console.log(`URL ${url} returned status ${response.status}`); // remove after testing
             return false;
         }
     } catch (error) {
-        if (error.response) {
-            console.error(`Error checking New Episode URL ${url}: Status ${error.response.status} -`, error.response.data);
+        // No new episode found, dont log error for 404 but everything else
+        if (error.response.status === 404) {
             return false;
         } else {
             console.error(`Error checking New Episode URL ${url}:`, error.message);
@@ -64,7 +62,6 @@ async function checkForNewEpisode(episodeUrl) {
         });
 
         if (loginResponse.status === 200) {
-            console.log("Login successful!"); // remove after testing
             const isNewEpisode = await checkNewEpisodeUrl(episodeUrl, axiosInstance);
             if (isNewEpisode) { 
                 return true; 

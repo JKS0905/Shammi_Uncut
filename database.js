@@ -15,7 +15,7 @@ async function connectToDatabase() {
     }
 };
 
-async function dbinsertEpisodeLog(episodeId, episodeNumber, dateTime) {
+async function dbInsertEpisodeLog(episodeId, episodeNumber, dateTime) {
     try {
         // SQL query to insert a new row in the table with all the fields
         const insertQuery = `
@@ -77,7 +77,7 @@ async function dbUpdateEpisodeDetails(newEpisodeId, newEpisodeNumber, dateTime) 
 };
 
 module.exports = { connectToDatabase,
-                   dbinsertEpisodeLog, 
+                   dbInsertEpisodeLog, 
                    dbGetEpisodeDetails,
                    dbUpdateEpisodeDetails
                 };

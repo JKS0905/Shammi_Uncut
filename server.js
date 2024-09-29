@@ -2,7 +2,7 @@ require('dotenv').config(); // Load environment variables from .env file
 const { checkForNewEpisode } = require("./checkForNewEpisode");
 const { getFormattedDateTime, sendEmailNotification } = require("./utils");
 const { connectToDatabase,
-        dbinsertEpisodeLog, 
+        dbInsertEpisodeLog, 
         dbGetEpisodeDetails,
         dbUpdateEpisodeDetails
 } = require("./database")
@@ -23,7 +23,6 @@ async function main() {
         const episodeUrl = `${baseUrl}${episode_id}`;
 
         const isNewEpisode = await checkForNewEpisode(episodeUrl);
-        console.log("SERVER", isNewEpisode);
 
         if (isNewEpisode) {
             console.log("New Episode");
@@ -32,29 +31,27 @@ async function main() {
             let newEpisode = episode + 1;
 
             // Logs the currert information in database
-            await dbinsertEpisodeLog(episode_id, episode, currentDateTime);
+            await dbInsertEpisodeLog(episode_id, episode, currentDateTime);
 
             // Logs the updtated information in database
             await dbUpdateEpisodeDetails(newEpisodeId, newEpisode, currentDateTime);
 
             const emailData = {
                 title: "Shammi Uncut",
-                subject: 'New Episode!',
+                subject: "New Episode!",
+                text: "There is a new episode available!",
                 message: `Episode ${episode} is now available at Shammi Uncut`,
                 email: RECIVING_EMAIL 
             }
             // Send Email Post request
             await sendEmailNotification(emailData);
-
-        } else {
-            console.log("NO New Episode");
         }
-        await new Promise(resovle => setTimeout(resovle, 600 * 1000));
+        // Time interval runns program every 1 hour
+        await new Promise(resovle => setTimeout(resovle, 3600 * 1000));
     }
-}
+};
 //Runs the main function in an infinite loop.
-//main()
-
+main()
 
 
 
