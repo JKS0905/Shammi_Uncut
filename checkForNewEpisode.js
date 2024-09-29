@@ -3,6 +3,14 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const { CookieJar } = require('tough-cookie');
 const { wrapper } = require('axios-cookiejar-support');
+const { connectToDatabase,
+    insertEpisode, 
+    updateEpisode, 
+    deleteEpisode,
+    fetchAllEpisodes,
+    deleteColumn,
+    dbGetEpisodeId
+} = require("./database")
 
 const {
     LOGIN_URL,
@@ -10,23 +18,16 @@ const {
     PASSWORD
 } = process.env;
 
-// Create a new cookie jar to store cookies
-const cookieJar = new CookieJar();
-const axiosInstance = wrapper(axios.create({ jar: cookieJar })); // Use wrapper
-
-async function checkNewEpisodeUrl(url) {
+async function checkNewEpisodeUrl(url, axiosInstance) {
     try {
         // Make a GET request to the URL
-        const response = await axiosInstance.get(url, {
-            jar: cookieJar, // Use the same cookie jar to maintain authentication
-            withCredentials: true
-        });
+        const response = await axiosInstance.get(url)
 
         if (response.status === 200) {
-            console.log(`URL ${url} returned status 200`);
+            console.log(`URL ${url} returned status 200`); // remove after testing
             return true;
         } else {
-            console.log(`URL ${url} returned status ${response.status}`);
+            console.log(`URL ${url} returned status ${response.status}`); // remove after testing
             return false;
         }
     } catch (error) {
@@ -40,7 +41,10 @@ async function checkNewEpisodeUrl(url) {
     }
 };
 
-async function checkForNewEpisode() {
+async function checkForNewEpisode(episodeUrl) {
+    // Create a new cookie jar to store cookies
+    const cookieJar = new CookieJar();
+    const axiosInstance = wrapper(axios.create({ jar: cookieJar })); // Use wrapper
     try {
         // Fetch the login page to get the CSRF token
         const response = await axiosInstance.get(LOGIN_URL, {
@@ -73,15 +77,17 @@ async function checkForNewEpisode() {
         });
 
         if (loginResponse.status === 200) {
-            console.log("Login successful!");
-
-            const isNewEpisode = await checkNewEpisodeUrl("https://shammiuncut.com/watch/movieNew/1196");
-            console.log(isNewEpisode);
-
+            console.log("Login successful!"); // remove after testing
+            const isNewEpisode = await checkNewEpisodeUrl(episodeUrl, axiosInstance);
+            if (isNewEpisode) { 
+                return true; 
+            } 
+            else { 
+                return false; 
+            }
         } else {
-            console.log("Login failed!");
+            throw new Error("Error during login")
         }
-
     } catch (error) {
         console.error("Error during login:", error.response ? error.response.data : error.message);
     }

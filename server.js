@@ -1,38 +1,87 @@
 require('dotenv').config();
-const { Client } = require('pg');
 const { checkForNewEpisode } = require("./checkForNewEpisode");
-const { sendEmail } = require('./emailService');
+const { sendEmail } = require("./emailService");
+const { connectToDatabase,
+        insertEpisodeLog, 
+        updateEpisode, 
+        deleteEpisode,
+        fetchAllEpisodes,
+        deleteColumn,
+        dbGetEpisodeDetails,
+        dbUpdateEpisodeDetails
+} = require("./database")
 
 const {
     RECIVING_EMAIL,
+    BASE_URL
 } = process.env;
 
-// Run the main function
+function getFormattedDateTime() {
+    const now = new Date();
 
-//sendEmail({ recivingEmail: RECIVING_EMAIL, message: "There is a new episode available in shammiUncut!" })
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // getMonth() is 0-based, so add 1
+    const year = now.getFullYear();
 
-//checkForNewEpisode();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
 
-const client = new Client({
-    host: process.env.PG_HOST,
-    port: process.env.PG_PORT,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-    database: process.env.PG_DATABASE,
-    ssl: { rejectUnauthorized: false } // Enable SSL if required
-});
+    return `${day}/${month}/${year} - ${hours}:${minutes}`;
+};
+
+async function main() {
+    // Connects to the Database
+    await connectToDatabase();
+    // Infinite loop
+    while (true) {
+        const episodeDetails = await dbGetEpisodeDetails();
+        const { episode_id, episode } = episodeDetails;
+
+        const baseUrl = BASE_URL;
+        const episodeUrl = `${baseUrl}${episode_id}`;
+
+        const isNewEpisode = await checkForNewEpisode(episodeUrl);
+        console.log("SERVER", isNewEpisode);
+
+        if (isNewEpisode) {
+            console.log("New Episode");
+            let currentDateTime = getFormattedDateTime();
+            let newEpisodeId = episode_id + 1;
+            let newEpisode = episode + 1;
+            await dbUpdateEpisodeDetails(newEpisodeId, newEpisode, currentDateTime);
+            await insertEpisodeLog(newEpisodeId, newEpisode, currentDateTime);
+
+            // Create log in Database
 
 
-async function setupDatabase() {
-    try {
-        await client.connect();
-        console.log('Connected to PostgreSQL');
-        // Your database setup code here
-    } catch (err) {
-        console.error('Database connection error:', err.stack);
-    } finally {
-        await client.end();
+
+        } else {
+            console.log("NO New Episode");
+        }
+        await new Promise(resovle => setTimeout(resovle, 60 * 1000));
     }
 }
 
-setupDatabase();
+//Runs the main function in an infinite loop.
+//main()
+
+//sendEmail({ recivingEmail: RECIVING_EMAIL, message: "There is a new episode available in shammiUncut!" })
+
+async function testing() {
+    //await connectToDatabase();
+    //const episodeDetails = await dbGetEpisodeDetails();
+    //const { episode_id, episode, date } = episodeDetails;
+    
+    //console.log(currentDateTime);
+}
+
+testing();
+
+
+//insertEpisodeLog(1176, 202, "29/09/2024 - 01:42")
+
+
+
+
+
+
