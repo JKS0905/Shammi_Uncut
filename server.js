@@ -22,11 +22,11 @@ async function main() {
     const secondsUntilNextHour = 60 - now.getSeconds();
     const delayUntilNextHour = (minuteUntilNextHour * 60 + secondsUntilNextHour) * 1000;
 
-    console.log(`The program will start in ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} secounds.`);
+    console.log(`The program will start in ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} secounds`);
 
     await new Promise(resolve => setTimeout(resolve, delayUntilNextHour));
 
-    console.log("Program is now running!!!")
+    console.log("Program is now running");
 
     // Infinite loop
     while (true) {
