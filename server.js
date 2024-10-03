@@ -65,4 +65,4 @@ async function main() {
 };
 
 //Runs the main function in an infinite loop.
-//main();
+main();
