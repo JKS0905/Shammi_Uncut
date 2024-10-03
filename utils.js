@@ -8,6 +8,7 @@ async function sendEmailNotification(emailData) {
     try {
         sgMail.setApiKey(SG_API_KEY);
 
+        // Deconstruct emailData
         const { title, subject, text, message, email } = emailData;
 
         const emailMessage = {
@@ -30,26 +31,11 @@ async function sendEmailNotification(emailData) {
     }
 };
 
-
-
-//async function sendEmailNotification(emailData) {
-//    try {
-//        const response = await axios.post(SEND_EMAIL_NOTIFICATION_URL, emailData);
-//
-//        if (response.status === 200) {
-//            console.log('Email sent successfully');
-//        } else {
-//            console.error(`Failed to send email: ${response.status}`);
-//        }
-//
-//    } catch (error) {
-//        console.error(`Error sending email: ${error.message}`);
-//    }
-//}
-
-
 function getFormattedDateTime() {
     const now = new Date();
+
+    // Add 2 hours to account for the timezone difference
+    now.setHours(now.getHours() + 2);
 
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0'); // getMonth() is 0-based, so add 1

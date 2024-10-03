@@ -22,11 +22,10 @@ async function dbInsertEpisodeLog(episodeId, episodeNumber, dateTime) {
             INSERT INTO shammi_uncut_episodes (episode_id, episode, date) 
             VALUES ($1, $2, $3);
         `;
-        
+
         // Run the query with all values in a single execution
         await client.query(insertQuery, [episodeId, episodeNumber, dateTime]);
-        console.log(`Log for Episode ID ${episodeId}, Episode Number ${episodeNumber}, and Date ${dateTime} added successfully`);
-        
+    
     } catch (err) {
         console.error('Error inserting episode log:', err.stack);
     }
@@ -66,11 +65,7 @@ async function dbUpdateEpisodeDetails(newEpisodeId, newEpisodeNumber, dateTime) 
         // Pass all parameters: newEpisodeId, newEpisodeNumber, and dateTime
         const res = await client.query(updateQuery, [newEpisodeId, newEpisodeNumber, dateTime]);
         
-        if (res.rowCount > 0) {
-            console.log(`Successfully updated episode ID to ${newEpisodeId}, episode number to ${newEpisodeNumber}, and date to ${dateTime}.`);
-        } else {
-            console.log('No rows updated. The row might not exist.');
-        }
+        if (!res.rowCount > 0) { console.log('No rows updated. The row might not exist.'); }
     } catch (error) {
         console.error('Error updating episode:', error.stack);
     }

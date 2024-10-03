@@ -15,6 +15,19 @@ const {
 async function main() {
     // Connects to the Database
     await connectToDatabase();
+
+    // Calculate delay until the next whole hour
+    const now = new Date();
+    const minuteUntilNextHour = 60 - now.getMinutes();
+    const secondsUntilNextHour = 60 - now.getSeconds();
+    const delayUntilNextHour = (minuteUntilNextHour * 60 + secondsUntilNextHour) * 1000;
+
+    console.log(`The program will start in ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} secounds.`);
+
+    await new Promise(resolve => setTimeout(resolve, delayUntilNextHour));
+
+    console.log("Program is now running!!!")
+
     // Infinite loop
     while (true) {
         const episodeDetails = await dbGetEpisodeDetails();
@@ -25,7 +38,7 @@ async function main() {
         const isNewEpisode = await checkForNewEpisode(episodeUrl);
 
         if (isNewEpisode) {
-            console.log("New Episode");
+            console.log(`Episode ${episode} is now available at Shammi Uncut - ${currentDateTime}`);
             let currentDateTime = getFormattedDateTime();
             let newEpisodeId = episode_id + 1;
             let newEpisode = episode + 1;
@@ -50,14 +63,6 @@ async function main() {
         await new Promise(resovle => setTimeout(resovle, 3600 * 1000));
     }
 };
+
 //Runs the main function in an infinite loop.
-main()
-
-
-
-
-
-
-
-
-
+//main();
