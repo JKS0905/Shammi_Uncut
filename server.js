@@ -1,6 +1,6 @@
 require('dotenv').config(); // Load environment variables from .env file
 const { checkForNewEpisode } = require("./checkForNewEpisode");
-const { getFormattedDateTime, sendEmailNotification } = require("./utils");
+const { getFormattedDateTime, sendEmailNotification, sendEmailNotificationBackup } = require("./utils");
 const { connectToDatabase,
         dbInsertEpisodeLog, 
         dbGetEpisodeDetails,
@@ -56,8 +56,16 @@ async function main() {
                 message: `Episode ${episode} is now available at Shammi Uncut`,
                 email: RECIVING_EMAIL 
             }
+
             // Send Email Post request
             await sendEmailNotification(emailData);
+
+            const emailSuccess = await sendEmailNotification(emailData);
+
+            if (!emailSuccess) {
+                // External API service
+                await sendEmailNotificationBackup(emailData);
+            }
         }
         // Time interval runns program every 1 hour
         await new Promise(resovle => setTimeout(resovle, 3600 * 1000));

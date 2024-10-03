@@ -1,10 +1,31 @@
 require('dotenv').config(); // Load environment variables from .env file
+const axios = require("axios")
 const sgMail = require('@sendgrid/mail');
 
 //const axios = require('axios');
-const { SEND_EMAIL_NOTIFICATION_URL, SG_API_KEY, SENDER_EMAIL } = process.env;
+const { SEND_EMAIL_NOTIFICATION_URL, API_KEY, SG_API_KEY, SENDER_EMAIL } = process.env;
+
 
 async function sendEmailNotification(emailData) {
+    try {
+        const response = await axios.post(SEND_EMAIL_NOTIFICATION_URL, emailData, {
+            headers: {"Authorization": API_KEY}
+        });
+
+        if (response.status === 200) {
+            return true;
+        } else {
+            console.error(`Failed to send email: ${response.status}`);
+            return false;
+        }
+
+    } catch (error) {
+        console.error(`Error sending email: ${error.message} - ${error.response ? error.response.data : null}`);
+        return false;
+    }
+};
+
+async function sendEmailNotificationBackup(emailData) {
     try {
         sgMail.setApiKey(SG_API_KEY);
 
@@ -17,7 +38,7 @@ async function sendEmailNotification(emailData) {
             name: title,
             email: SENDER_EMAIL
         },
-        subject: subject,
+        subject: `${subject} - Backup`,
         text: text,
         html: `<span>${message}</span>`,
         }
@@ -47,4 +68,4 @@ function getFormattedDateTime() {
     return `${day}/${month}/${year} - ${hours}:${minutes}`;
 };
 
-module.exports = { getFormattedDateTime, sendEmailNotification };
+module.exports = { getFormattedDateTime, sendEmailNotification, sendEmailNotificationBackup };
