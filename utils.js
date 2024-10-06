@@ -30,7 +30,7 @@ async function sendEmailNotificationBackup(emailData) {
         sgMail.setApiKey(SG_API_KEY);
 
         // Deconstruct emailData
-        const { title, subject, text, message, email } = emailData;
+        const { title, subject, message, email } = emailData;
 
         const emailMessage = {
         to: email,
@@ -39,8 +39,7 @@ async function sendEmailNotificationBackup(emailData) {
             email: SENDER_EMAIL
         },
         subject: `${subject} - Backup`,
-        text: text,
-        html: `<span>${message}</span>`,
+        text: message
         }
         sgMail
         .send(emailMessage)

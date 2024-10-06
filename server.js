@@ -52,9 +52,8 @@ async function main() {
             const emailData = {
                 title: "Shammi Uncut",
                 subject: "New Episode!",
-                text: "There is a new episode available!",
                 message: `Episode ${episode} is now available at Shammi Uncut`,
-                email: RECIVING_EMAIL 
+                email: RECIVING_EMAIL
             }
 
             // Send Email Post request
