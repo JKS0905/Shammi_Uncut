@@ -57,8 +57,6 @@ async function main() {
             }
 
             // Send Email Post request
-            await sendEmailNotification(emailData);
-
             const emailSuccess = await sendEmailNotification(emailData);
 
             if (!emailSuccess) {
