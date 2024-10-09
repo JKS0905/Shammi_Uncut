@@ -18,7 +18,7 @@ async function main() {
 
     // Calculate delay until the next whole hour
     const now = new Date();
-    
+
     const minuteUntilNextHour = now.getMinutes() === 0 ? 0 : 60 - now.getMinutes();  // Handles edge case at the top of the hour
     const secondsUntilNextHour = now.getSeconds() === 0 ? 0 : 60 - now.getSeconds();  // Handles edge case at 00 seconds
     const delayUntilNextHour = (minuteUntilNextHour * 60 + secondsUntilNextHour) * 1000;
@@ -26,7 +26,7 @@ async function main() {
     console.log(`The program will start in ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} secounds`);
     console.log(`Calculated delay: ${delayUntilNextHour} milliseconds`);
 
-    await new Promise(resolve => setTimeout(resolve, 30 * 1000));
+    await new Promise(resolve => setTimeout(resolve, delayUntilNextHour));
 
     console.log("Program is now running");
 
@@ -40,10 +40,10 @@ async function main() {
         const isNewEpisode = await checkForNewEpisode(episodeUrl);
 
         if (isNewEpisode) {
-            console.log(`Episode ${episode} is now available at Shammi Uncut - ${currentDateTime}`);
             let currentDateTime = getFormattedDateTime();
             let newEpisodeId = episode_id + 1;
             let newEpisode = episode + 1;
+            console.log(`Episode ${episode} is now available at Shammi Uncut - ${currentDateTime}`);
 
             // Logs the currert information in database
             await dbInsertEpisodeLog(episode_id, episode, currentDateTime);
