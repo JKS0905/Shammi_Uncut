@@ -24,7 +24,7 @@ async function main() {
 
     console.log(`The program will start in ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} secounds`);
 
-    await new Promise(resolve => setTimeout(resolve, 30));
+    await new Promise(resolve => setTimeout(resolve, 30 * 1000));
 
     console.log("Program is now running");
 
