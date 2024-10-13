@@ -67,4 +67,25 @@ function getFormattedDateTime() {
     return `${day}/${month}/${year} - ${hours}:${minutes}`;
 };
 
-module.exports = { getFormattedDateTime, sendEmailNotification, sendEmailNotificationBackup };
+// Validate Querry value
+async function getQuerryValue(querryResult, querryKey, returnNumber) {
+
+    // Find the entry with the key you're interested in
+    const entry = querryResult.find(entry => entry.key === querryKey);
+
+    // Check if the entry exists and return the value
+    if (entry) {
+        if (returnNumber === true) {
+            // return Number instead of string.
+            return Number(entry.value)
+        }
+        else {
+            return entry.value
+        }
+    }
+    else {
+        console.log('Episode number not found.');
+    }
+};
+
+module.exports = { getFormattedDateTime, sendEmailNotification, sendEmailNotificationBackup, getQuerryValue };

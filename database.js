@@ -15,38 +15,46 @@ async function connectToDatabase() {
     }
 };
 
-async function dbInsertEpisodeLog(episodeId, episodeNumber, dateTime) {
+async function dbInsertQuerry(table, keys, values) {
     try {
+        // Ensure keys and values arrays have the same length
+        if (keys.length !== values.length) {
+            throw new Error("Keys and values must have the same length");
+        }
+
+        const placeholders = keys.map((_, index) => `$${index + 1}`).join(', '); // Create $1, $2, $3... for parameters
+
         // SQL query to insert a new row in the table with all the fields
         const insertQuery = `
-            INSERT INTO shammi_uncut_episodes (episode_id, episode, date) 
-            VALUES ($1, $2, $3);
+        INSERT INTO ${table} (${keys.join(', ')}) 
+        VALUES (${placeholders});
         `;
 
         // Run the query with all values in a single execution
-        await client.query(insertQuery, [episodeId, episodeNumber, dateTime]);
+        await client.query(insertQuery, values);
     
     } catch (err) {
         console.error('Error inserting episode log:', err.stack);
     }
 };
 
-async function dbGetEpisodeDetails() {
+async function dbGetQuery(table, keys) {
     try {
-        const getEpisodeQuery = `
-            SELECT episode_id, episode, date
-            FROM shammi_uncut_logic
-            ORDER BY episode_id
-            LIMIT 1 OFFSET 0; -- Adjust OFFSET for other rows
+        // Join keys array into a comma-separated string
+        const selectedKeys = Array.isArray(keys) ? keys.join(', ') : keys;
+
+        const getQuery = `
+            SELECT ${selectedKeys}
+            FROM ${table}
         `;
         
-        const res = await client.query(getEpisodeQuery);
+        const res = await client.query(getQuery);
         
         if (res.rows.length > 0) {
-            // Return the entire row with all selected columns
-            return res.rows[0]; // This will return an object with { episode_id, episode, date }
+            // Return all rows retrieved from the query
+            return res.rows; // This will return an array of objects
         } else {
-            throw new Error("No rows found in Table: shammi_uncut_logic ");
+            throw new Error(`No rows found in Table: ${table}`);
         }
         
     } catch (error) {
@@ -54,25 +62,28 @@ async function dbGetEpisodeDetails() {
     } 
 };
 
-async function dbUpdateEpisodeDetails(newEpisodeId, newEpisodeNumber, dateTime) {
+async function dbUpdateQuerry(table, key, value) {
     try {
         const updateQuery = `
-            UPDATE shammi_uncut_logic
-            SET episode_id = $1, episode = $2, date = $3
-            WHERE episode_id = (SELECT episode_id FROM shammi_uncut_logic ORDER BY episode_id LIMIT 1 OFFSET 0); -- Adjust OFFSET for other rows
+            UPDATE ${table}
+            SET value = $2
+            WHERE key = $1
         `;
         
-        // Pass all parameters: newEpisodeId, newEpisodeNumber, and dateTime
-        const res = await client.query(updateQuery, [newEpisodeId, newEpisodeNumber, dateTime]);
+        // Pass parameters: key and value
+        const res = await client.query(updateQuery, [key, value]);
         
-        if (!res.rowCount > 0) { console.log('No rows updated. The row might not exist.'); }
+        if (res.rowCount === 0) { 
+            console.log('No rows updated. The row might not exist.'); 
+        }
+        
     } catch (error) {
-        console.error('Error updating episode:', error.stack);
+        console.error('Error updating configuration:', error.stack);
     }
 };
 
 module.exports = { connectToDatabase,
-                   dbInsertEpisodeLog, 
-                   dbGetEpisodeDetails,
-                   dbUpdateEpisodeDetails
+                   dbInsertQuerry, 
+                   dbGetQuery,
+                   dbUpdateQuerry
                 };

@@ -1,10 +1,10 @@
 require('dotenv').config(); // Load environment variables from .env file
 const { checkForNewEpisode } = require("./checkForNewEpisode");
-const { getFormattedDateTime, sendEmailNotification, sendEmailNotificationBackup } = require("./utils");
+const { getFormattedDateTime, sendEmailNotification, sendEmailNotificationBackup, getQuerryValue } = require("./utils");
 const { connectToDatabase,
-        dbInsertEpisodeLog, 
-        dbGetEpisodeDetails,
-        dbUpdateEpisodeDetails
+        dbInsertQuerry, 
+        dbGetQuery,
+        dbUpdateQuerry
 } = require("./database")
 
 const {
@@ -32,29 +32,37 @@ async function main() {
 
     // Infinite loop
     while (true) {
-        const episodeDetails = await dbGetEpisodeDetails();
-        const { episode_id, episode } = episodeDetails;
+        // Gets data from the configurations data table
+        const configurationsData = await dbGetQuery("configurations", ["key", "value"]);
+
+        // Gets specific value from Datbase
+        const episode_id = await getQuerryValue(configurationsData, "episode_id", true);
+        const episode_number = await getQuerryValue(configurationsData, "episode_number", true)
+
         const baseUrl = BASE_URL;
         const episodeUrl = `${baseUrl}${episode_id}`;
 
+        // Checks to see if there is a new episode
         const isNewEpisode = await checkForNewEpisode(episodeUrl);
 
         if (isNewEpisode) {
             let currentDateTime = getFormattedDateTime();
             let newEpisodeId = episode_id + 1;
-            let newEpisode = episode + 1;
-            console.log(`Episode ${episode} is now available at Shammi Uncut - ${currentDateTime}`);
+            let newEpisode_number = episode_number + 1;
+            console.log(`Episode ${episode_number} is now available at Shammi Uncut - ${currentDateTime}`);
 
             // Logs the currert information in database
-            await dbInsertEpisodeLog(episode_id, episode, currentDateTime);
+            
+            await dbInsertQuerry("episodes", ["episode_id", "episode", "date"], [episode_id, episode_number, currentDateTime]);
 
-            // Logs the updtated information in database
-            await dbUpdateEpisodeDetails(newEpisodeId, newEpisode, currentDateTime);
+            // Updates the configurations table in the database
+            await dbUpdateQuerry("configurations", "episode_id", newEpisodeId)
+            await dbUpdateQuerry("configurations", "episode_number", newEpisode_number)
 
             const emailData = {
                 title: "Shammi Uncut",
                 subject: "New Episode!",
-                message: `Episode ${episode} is now available at Shammi Uncut`,
+                message: `Episode ${episode_number} is now available at Shammi Uncut`,
                 email: RECIVING_EMAIL
             }
 
