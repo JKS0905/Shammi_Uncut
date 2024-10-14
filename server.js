@@ -37,7 +37,7 @@ async function main() {
                 // Gets data from the configurations data table
                 const configurationsData = await dbGetQuery("configurations", ["key", "value"]);
 
-                // Gets specific value from Datbase
+                // Gets specific values from Datbase
                 const episode_id = await getQuerryValue(configurationsData, "episode_id", true);
                 const episode_number = await getQuerryValue(configurationsData, "episode_number", true)
 
@@ -53,14 +53,6 @@ async function main() {
                     let newEpisode_number = episode_number + 1;
                     console.log(`Episode ${episode_number} is now available at Shammi Uncut - ${currentDateTime}`);
 
-                    // Logs the currert information in database
-                    
-                    await dbInsertQuerry("episodes", ["episode_id", "episode", "date"], [episode_id, episode_number, currentDateTime]);
-
-                    // Updates the configurations table in the database
-                    await dbUpdateQuerry("configurations", "episode_id", newEpisodeId)
-                    await dbUpdateQuerry("configurations", "episode_number", newEpisode_number)
-
                     const emailData = {
                         title: "Shammi Uncut",
                         subject: "New Episode!",
@@ -68,13 +60,26 @@ async function main() {
                         email: RECIVING_EMAIL
                     }
 
-                    // Send Email Post request
-                    const emailSuccess = await sendEmailNotification(emailData);
-
-                    if (!emailSuccess) {
-                        // External API service
-                        await sendEmailNotificationBackup(emailData);
-                    }
+                    // Logs the data and updates configurations in the database
+                    dbInsertQuerry("episodes", ["episode_id", "episode", "date"], [episode_id, episode_number, currentDateTime])
+                        .then(() => dbUpdateQuerry("configurations", "episode_id", newEpisodeId))           
+                        .then(() => dbUpdateQuerry("configurations", "episode_number", newEpisode_number))
+                        .then(() => sendEmailNotification(emailData)) // Send Email Post request
+                        .then(emailSuccess => {
+                            if (!emailSuccess) {
+                                return new Promise((resolve) => {
+                                    setTimeout(resolve, 5 * 60 * 1000);
+                                }).then(() => sendEmailNotification(emailData))
+                            }
+                        })
+                        .then(emailSuccess => {
+                            if (!emailSuccess) {
+                                return sendEmailNotificationBackup(emailData); // External API service
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error processing new episode:", error);
+                        });
                 }
                 // Time interval runns program every 1 hour
                 await new Promise(resovle => setTimeout(resovle, 3600 * 1000));
