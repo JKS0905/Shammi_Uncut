@@ -2,7 +2,7 @@ require('dotenv').config(); // Load environment variables from .env file
 const { Client } = require('pg');
 
 const client = new Client({
-    connectionString: process.env.DATABASE_URL, // Use the connection URL here
+    connectionString: "postgres.railway.internal", //process.env.DATABASE_URL,  // Use the connection URL here
     ssl: { rejectUnauthorized: false }  // Enable SSL if required
 });
 
@@ -78,7 +78,7 @@ async function dbUpdateQuerry(table, key, value) {
         if (res.rowCount === 0) { 
             console.log('No rows updated. The row might not exist.'); 
         }
-        
+
     } catch (error) {
         console.error('Error updating configuration:', error.stack);
     }
