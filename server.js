@@ -1,6 +1,11 @@
 require('dotenv').config(); // Load environment variables from .env file
 const { checkForNewEpisode } = require("./checkForNewEpisode");
-const { getFormattedDateTime, sendEmailNotification, sendEmailNotificationBackup, getQuerryValue } = require("./utils");
+
+const { getFormattedDateTime, 
+        sendEmailNotification, 
+        delayUntilNextWholeHour, 
+        getQuerryValue } = require("./utils");
+
 const { connectToDatabase,
         dbInsertQuerry, 
         dbGetQuery,
@@ -48,39 +53,25 @@ async function mainProgram() {
                 email: RECIVING_EMAIL
             }
 
-            // Send Email Post request
-            const emailSuccess = await sendEmailNotification(emailData);
+            const maxAttempts = await getQuerryValue(configurationsData, "email_max_attempts", true);
+            const retryDelay = await getQuerryValue(configurationsData, "email_retry_delay", true);
 
-            if (!emailSuccess) {
-                // External API service
-                await sendEmailNotificationBackup(emailData);
-            }
-        }
+            // Send Email Post request
+            await sendEmailNotification(emailData, maxAttempts, retryDelay);
+
+        } else {console.log("No new episode")}
     } catch (error) {
         console.error(`Error mainProgram: ${error.message}`);
     }
 };
 
 async function main() {
-    let dbConnectPromise;
-
     try {
         // Connects to the Database
-        dbConnectPromise = connectToDatabase();
+        await connectToDatabase();
 
-        // Calculate delay until the next whole hour
-        const now = new Date();
-
-        const minuteUntilNextHour = now.getMinutes() === 0 ? 0 : 60 - now.getMinutes();  // Handles edge case at the top of the hour
-        const secondsUntilNextHour = now.getSeconds() === 0 ? 0 : 60 - now.getSeconds();  // Handles edge case at 00 seconds
-        const delayUntilNextHour = (minuteUntilNextHour * 60 + secondsUntilNextHour) * 1000;
-
-        console.log(`The program will start in ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} secounds`);
-        console.log(`Calculated delay: ${delayUntilNextHour} milliseconds`);
-
-        await new Promise(resolve => setTimeout(resolve, delayUntilNextHour));
-
-        await dbConnectPromise;
+         // Initial delay until the next whole hour
+        await delayUntilNextWholeHour(true);
 
         console.log("Program is now running");
 
@@ -91,7 +82,7 @@ async function main() {
                 mainProgram();
 
                 // Time interval runns program every 1 hour
-                await new Promise(resovle => setTimeout(resovle, 3600 * 1000));
+                await delayUntilNextWholeHour();
 
             } catch (error) {
                 console.error(`Error mainWile: ${error.message}`);
