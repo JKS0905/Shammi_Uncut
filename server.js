@@ -59,7 +59,7 @@ async function mainProgram() {
     } catch (error) {
         console.error(`Error mainProgram: ${error.message}`);
     }
-}
+};
 
 async function main() {
     let dbConnectPromise;
