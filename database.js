@@ -10,8 +10,10 @@ async function connectToDatabase() {
     try {
         await client.connect();
         console.log('Connected to Database');
+        return true;
     } catch (error) {
         console.error('Database Connection error:', error.stack);
+        return false;
     }
 };
 
