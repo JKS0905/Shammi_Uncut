@@ -2,8 +2,8 @@ require('dotenv').config(); // Load environment variables from .env file
 const { Client } = require('pg');
 
 const client = new Client({
-    connectionString: "postgres.railway.internal", //process.env.DATABASE_URL,  // Use the connection URL here
-    ssl: { rejectUnauthorized: false }  // Enable SSL if required
+    connectionString: process.env.DATABASE_URL,  // Use the connection URL here
+    ssl: { rejectUnauthorized: false }  // Enable SSL if required sdw
 });
 
 async function connectToDatabase() {
