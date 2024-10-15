@@ -81,10 +81,10 @@ async function main() {
         while (true) {
             try {
                 // Run the main program asynchronously
-                await mainProgram();
+                mainProgram();
 
                 // Time interval runns program every 1 hour
-                await delayUntilNextWholeHour();
+                await new Promise(resovle => setTimeout(resovle, 3600 * 1000))
 
             } catch (error) {
                 console.error(`Error mainWile: ${error.message}`);
