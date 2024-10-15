@@ -5,7 +5,6 @@ const sgMail = require('@sendgrid/mail');
 //const axios = require('axios');
 const { SEND_EMAIL_NOTIFICATION_URL, API_KEY, SG_API_KEY, SENDER_EMAIL } = process.env;
 
-
 async function sendEmailNotification(emailData, maxAttempts, retryDelay) { 
     // For loop to retry sending email if it fails
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -63,6 +62,8 @@ async function sendEmailNotificationBackup(emailData) {
     }
 };
 
+const testMode = false;
+
 async function delayUntilNextWholeHour(log) {
     const now = new Date();
     const minuteUntilNextHour = now.getMinutes() === 0 ? 0 : 60 - now.getMinutes();  // Handles edge case at the top of the hour
@@ -72,7 +73,22 @@ async function delayUntilNextWholeHour(log) {
     if (log) {
         console.log(`Delaying program for ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} seconds`);
     }
+
     await new Promise(resolve => setTimeout(resolve, delay));
+
+    if (!testMode) {
+        return;
+    }
+
+    now = new Date();
+    if (now.getMinutes === 0 && now.getSeconds === 0) {
+        console.log("Timer retuned on TOP of hour");
+        return;
+    }
+    else {
+        console.log("Wating one more hour to try again to hit 00");
+        await delayUntilNextWholeHour();
+    }
 };
 
 function getFormattedDateTime() {

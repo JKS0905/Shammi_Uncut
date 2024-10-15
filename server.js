@@ -26,7 +26,7 @@ async function main() {
         await delayUntilNextWholeHour(true);
 
         console.log("Program is now running");
-
+        
         // Infinite loop
         while (true) {
             try {
@@ -38,7 +38,6 @@ async function main() {
 
                 // Gets specific value from Datbase
                 const episode_id = await getQuerryValue(configurationsData, "episode_id", true);
-                const episode_number = await getQuerryValue(configurationsData, "episode_number", true);
 
                 const baseUrl = BASE_URL;
                 const episodeUrl = `${baseUrl}${episode_id}`;
@@ -47,6 +46,7 @@ async function main() {
                 const isNewEpisode = await checkForNewEpisode(episodeUrl);
 
                 if (isNewEpisode) {
+                    const episode_number = await getQuerryValue(configurationsData, "episode_number", true);
                     let newEpisodeId = episode_id + 1;
                     let newEpisode_number = episode_number + 1;
                     console.log(`Episode ${episode_number} is now available at Shammi Uncut - ${currentDateTime}`);
@@ -74,7 +74,7 @@ async function main() {
                 } else {
                     console.log(`No new episode - ${currentDateTime}`)
                 }
-                
+
                 // Time interval runns program every 1 hour
                 await delayUntilNextWholeHour();
 
