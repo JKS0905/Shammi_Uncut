@@ -10,7 +10,7 @@ const { connectToDatabase,
         dbInsertQuerry, 
         dbGetQuery,
         dbUpdateQuerry
-} = require("./database")
+} = require("./database");
 
 const {
     RECIVING_EMAIL,
@@ -19,12 +19,15 @@ const {
 
 async function mainProgram() {
     try {
+        // Gets the current date and time
+        const currentDateTime = getFormattedDateTime();
+        
         // Gets data from the configurations data table
         const configurationsData = await dbGetQuery("configurations", ["key", "value"]);
 
         // Gets specific value from Datbase
         const episode_id = await getQuerryValue(configurationsData, "episode_id", true);
-        const episode_number = await getQuerryValue(configurationsData, "episode_number", true)
+        const episode_number = await getQuerryValue(configurationsData, "episode_number", true);
 
         const baseUrl = BASE_URL;
         const episodeUrl = `${baseUrl}${episode_id}`;
@@ -33,25 +36,23 @@ async function mainProgram() {
         const isNewEpisode = await checkForNewEpisode(episodeUrl);
 
         if (isNewEpisode) {
-            let currentDateTime = getFormattedDateTime();
             let newEpisodeId = episode_id + 1;
             let newEpisode_number = episode_number + 1;
             console.log(`Episode ${episode_number} is now available at Shammi Uncut - ${currentDateTime}`);
 
             // Logs the currert information in database
-            
-            await dbInsertQuerry("episodes", ["episode_id", "episode", "date"], [episode_id, episode_number, currentDateTime]);
+            dbInsertQuerry("episodes", ["episode_id", "episode", "date"], [episode_id, episode_number, currentDateTime]);
 
             // Updates the configurations table in the database
-            await dbUpdateQuerry("configurations", "episode_id", newEpisodeId)
-            await dbUpdateQuerry("configurations", "episode_number", newEpisode_number)
+            dbUpdateQuerry("configurations", "episode_id", newEpisodeId);
+            dbUpdateQuerry("configurations", "episode_number", newEpisode_number);
 
             const emailData = {
                 title: "Shammi Uncut",
                 subject: "New Episode!",
                 message: `Episode ${episode_number} is now available at Shammi Uncut`,
                 email: RECIVING_EMAIL
-            }
+            };
 
             const maxAttempts = await getQuerryValue(configurationsData, "email_max_attempts", true);
             const retryDelay = await getQuerryValue(configurationsData, "email_retry_delay", true);
