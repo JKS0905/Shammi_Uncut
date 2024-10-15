@@ -58,8 +58,10 @@ async function mainProgram() {
 
             // Send Email Post request
             await sendEmailNotification(emailData, maxAttempts, retryDelay);
-
-        } else {console.log(`No new episode - ${getFormattedDateTime}`)}
+        
+        } else {
+            const currentTimeStamp = getFormattedDateTime();
+            console.log(`No new episode - ${currentTimeStamp}`)}
     } catch (error) {
         console.error(`Error mainProgram: ${error.message}`);
     }
