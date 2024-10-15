@@ -70,7 +70,6 @@ async function mainProgram() {
 
 async function main() {
     try {
-        console.warn("Waring test!")
         // Connects to the Database
         await connectToDatabase();
 
