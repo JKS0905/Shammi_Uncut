@@ -73,7 +73,7 @@ async function delayUntilNextWholeHour(log) {
         console.log(`Delaying program for ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} seconds`);
     }
     await new Promise(resolve => setTimeout(resolve, delay));
-}
+};
 
 function getFormattedDateTime() {
     const now = new Date();

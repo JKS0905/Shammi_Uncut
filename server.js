@@ -59,7 +59,7 @@ async function mainProgram() {
             // Send Email Post request
             await sendEmailNotification(emailData, maxAttempts, retryDelay);
 
-        } else {console.log("No new episode")}
+        } else {console.log(`No new episode - ${getFormattedDateTime}`)}
     } catch (error) {
         console.error(`Error mainProgram: ${error.message}`);
     }
@@ -79,7 +79,7 @@ async function main() {
         while (true) {
             try {
                 // Run the main program asynchronously
-                mainProgram();
+                await mainProgram();
 
                 // Time interval runns program every 1 hour
                 await delayUntilNextWholeHour();
