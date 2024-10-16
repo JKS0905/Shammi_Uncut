@@ -65,7 +65,7 @@ async function sendEmailNotificationBackup(emailData) {
 const testMode = true;
 
 async function delayUntilNextWholeHour(log) {
-    const now = new Date();
+    let now = new Date();
     const minuteUntilNextHour = now.getMinutes() === 0 ? 0 : 60 - now.getMinutes();  // Handles edge case at the top of the hour
     const secondsUntilNextHour = now.getSeconds() === 0 ? 0 : 60 - now.getSeconds();  // Handles edge case at 00 seconds
     const delay = (minuteUntilNextHour * 60 + secondsUntilNextHour) * 1000;
