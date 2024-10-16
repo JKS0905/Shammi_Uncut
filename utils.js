@@ -81,7 +81,7 @@ async function delayUntilNextWholeHour(log) {
     }
 
     now = new Date();
-    if (now.getMinutes === 0 && now.getSeconds === 0) {
+    if (now.getMinutes() === 0 && now.getSeconds() === 0) {
         console.log("Timer retuned on TOP of hour");
         return;
     }
