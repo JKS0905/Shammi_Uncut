@@ -86,7 +86,7 @@ async function delayUntilNextWholeHour(log) {
         return;
     }
     else {
-        console.log(`Wating one more hour to try again to hit 00:00, current time: ${now.getMinutes()}:${now.getSeconds()}`);
+        console.log(`Wating one more hour to try again to hit 00:00, current time: ${String(now.getMinutes().padStart(2, "0"))}:${String(now.getSeconds().padStart(2, "0"))}`);
         await delayUntilNextWholeHour();
     }
 };
