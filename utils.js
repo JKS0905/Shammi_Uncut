@@ -62,7 +62,7 @@ async function sendEmailNotificationBackup(emailData) {
     }
 };
 
-const testMode = false;
+const testMode = true;
 
 async function delayUntilNextWholeHour(log) {
     const now = new Date();
