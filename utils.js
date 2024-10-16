@@ -66,8 +66,16 @@ const testMode = true;
 
 async function delayUntilNextWholeHour(log) {
     let now = new Date();
-    const minuteUntilNextHour = now.getMinutes() === 0 ? 0 : 60 - now.getMinutes();  // Handles edge case at the top of the hour
-    const secondsUntilNextHour = now.getSeconds() === 0 ? 0 : 60 - now.getSeconds();  // Handles edge case at 00 seconds
+
+    // If already at 00:00, skip delay
+    if (now.getMinutes() === 0 && now.getSeconds() === 0) {
+        console.log("Timer already on TOP of the hour");
+        return;
+    }
+
+    const minuteUntilNextHour  = 60 - now.getMinutes();  
+    const secondsUntilNextHour = 60 - now.getSeconds(); 
+    
     const delay = (minuteUntilNextHour * 60 + secondsUntilNextHour) * 1000;
     
     if (log) {
@@ -81,6 +89,7 @@ async function delayUntilNextWholeHour(log) {
     }
 
     now = new Date();
+    
     if (now.getMinutes() === 0 && now.getSeconds() === 0) {
         console.log("Timer retuned on TOP of hour");
         return;
