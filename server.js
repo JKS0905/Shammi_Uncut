@@ -30,9 +30,7 @@ async function main() {
         // Infinite loop
         while (true) {
             try {
-                // Gets the current date and time
-                const currentDateTime = getFormattedDateTime();
-                
+
                 // Gets data from the configurations data table
                 const configurationsData = await dbGetQuery("configurations", ["key", "value"]);
 
@@ -46,6 +44,8 @@ async function main() {
                 const isNewEpisode = await checkForNewEpisode(episodeUrl);
 
                 if (isNewEpisode) {
+                     // Gets the current date and time
+                    const currentDateTime = getFormattedDateTime();
                     const episode_number = await getQuerryValue(configurationsData, "episode_number", true);
                     let newEpisodeId = episode_id + 1;
                     let newEpisode_number = episode_number + 1;
@@ -71,8 +71,6 @@ async function main() {
                     // Send Email Post request
                     await sendEmailNotification(emailData, maxAttempts, retryDelay);
                 
-                } else {
-                    console.log(`No new episode - ${currentDateTime}`)
                 }
 
                 // Time interval runns program every 1 hour

@@ -35,8 +35,8 @@ async function dbInsertQuerry(table, keys, values) {
         // Run the query with all values in a single execution
         await client.query(insertQuery, values);
     
-    } catch (err) {
-        console.error('Error inserting episode log:', err.stack);
+    } catch (error) {
+        console.error('Error inserting episode log:', error.stack);
     }
 };
 
