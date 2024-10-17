@@ -73,10 +73,10 @@ async function delayUntilNextWholeHour(log) {
         return;
     }
 
-    const minuteUntilNextHour  = 59 - now.getMinutes();  
+    const minuteUntilNextHour  = 60 - now.getMinutes();  
     const secondsUntilNextHour = 60 - now.getSeconds(); 
     
-    const delay = (minuteUntilNextHour * 60 + secondsUntilNextHour) * 1000;
+    const delay = (minuteUntilNextHour * 59 + secondsUntilNextHour) * 1000;
     
     if (log) {
         console.log(`Delaying program for ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} seconds`);
@@ -88,18 +88,18 @@ async function delayUntilNextWholeHour(log) {
         return;
     }
 
-    now = new Date();
-    
-    if (now.getMinutes() === 0 && now.getSeconds() === 0) {
-        console.log("Timer retuned on TOP of hour");
-        return;
-    }
-    else {
-        const min = String(now.getMinutes()).padStart(2, "0");
-        const sec = String(now.getSeconds()).padStart(2, "0");
-        console.log(`Wating one more hour to try again to hit 00:00, current time: ${min}:${sec}`);
-        await delayUntilNextWholeHour();
-    }
+    //now = new Date();
+    //
+    //if (now.getMinutes() === 0 && now.getSeconds() <= 59) {
+    //    console.log("Timer retuned on TOP of hour");
+    //    return;
+    //}
+    //else {
+    //    const min = String(now.getMinutes()).padStart(2, "0");
+    //    const sec = String(now.getSeconds()).padStart(2, "0");
+    //    console.log(`Wating one more hour to try again to hit 00:00, current time: ${min}:${sec}`);
+    //    await delayUntilNextWholeHour();
+    //}
 };
 
 function getFormattedDateTime() {
@@ -116,7 +116,7 @@ function getFormattedDateTime() {
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const secounds = String(now.getSeconds()).padStart(2, '0');
 
-    return `${day}/${month}/${year} - ${hours}:${minutes}:${secounds}`;
+    return `${day}/${month}/${year} - ${hours}:${minutes}`;
 };
 
 // Validate Querry value
