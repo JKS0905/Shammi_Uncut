@@ -73,10 +73,10 @@ async function delayUntilNextWholeHour(log) {
         return;
     }
 
-    const minuteUntilNextHour  = 60 - now.getMinutes();  
+    const minuteUntilNextHour  = 59 - now.getMinutes();  
     const secondsUntilNextHour = 60 - now.getSeconds(); 
     
-    const delay = (minuteUntilNextHour * 59 + secondsUntilNextHour) * 1000;
+    const delay = (minuteUntilNextHour * 60 + secondsUntilNextHour) * 1000;
     
     if (log) {
         console.log(`Delaying program for ${minuteUntilNextHour} minutes and ${secondsUntilNextHour} seconds`);
