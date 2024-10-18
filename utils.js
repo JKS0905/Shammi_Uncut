@@ -24,7 +24,6 @@ async function sendEmailNotification(emailData, maxAttempts, retryDelay) {
         }
 
         if (attempt < maxAttempts) {
-            console.log(`Retrying in ${retryDelay} seconds...`);
             await new Promise(resolve => setTimeout(resolve, retryDelay * 1000))
         } else {
             await sendEmailNotificationBackup(emailData); // Call backup email service, External API service

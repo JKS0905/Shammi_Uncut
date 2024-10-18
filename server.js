@@ -9,7 +9,8 @@ const { getFormattedDateTime,
 const { connectToDatabase,
         dbInsertQuerry, 
         dbGetQuery,
-        dbUpdateQuerry
+        dbUpdateQuerry,
+        safeDbOperation
 } = require("./database");
 
 const {
@@ -32,11 +33,11 @@ async function main() {
             try {
 
                 // Gets data from the configurations data table
-                const configurationsData = await dbGetQuery("configurations", ["key", "value"]);
+                const configurationsData = await safeDbOperation(dbGetQuery, ["configurations", ["key", "value"]]);
 
                 // Gets specific value from Datbase
                 const episode_id = await getQuerryValue(configurationsData, "episode_id", true);
-
+                
                 const baseUrl = BASE_URL;
                 const episodeUrl = `${baseUrl}${episode_id}`;
 
@@ -52,11 +53,12 @@ async function main() {
                     console.log(`Episode ${episode_number} is now available at Shammi Uncut - ${currentDateTime}`);
 
                     // Logs the currert information in database asynchronously
-                    await dbInsertQuerry("episodes", ["episode_id", "episode", "date"], [episode_id, episode_number, currentDateTime]);
+                    await safeDbOperation(dbInsertQuerry, ["episodes", ["episode_id", "episode", "date"], [episode_id, episode_number, currentDateTime]]);
 
                     // Updates the configurations table in the database asynchronously
-                    await dbUpdateQuerry("configurations", "episode_id", newEpisodeId);
-                    await dbUpdateQuerry("configurations", "episode_number", newEpisode_number);
+                    await safeDbOperation(dbUpdateQuerry, ["configurations", "episode_id", newEpisodeId]);
+                    await safeDbOperation(dbUpdateQuerry, ["configurations", "episode_number", newEpisode_number]);
+            
 
                     const emailData = {
                         title: "Shammi Uncut",

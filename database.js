@@ -7,13 +7,26 @@ const client = new Client({
 });
 
 async function connectToDatabase() {
-    try {
-        await client.connect();
-        console.log('Connected to Database');
-        return true;
-    } catch (error) {
-        console.error('Database Connection error:', error.stack);
-        return false;
+    const retryLimit = 5;
+    const retryDelay = 5; // In secounds
+    let attempts = 0;
+    
+    while (attempts < retryLimit) {
+        try {
+            await client.connect();
+            console.log('Connected to Database');
+            return true;
+        } catch (error) {
+            attempts++;
+            console.error('Database Connection error:', error.stack);
+            
+            if (attempts >= retryLimit) {
+                console.error('Max retry attempts reached. Unable to connect to the database.');
+                return false;
+            }
+
+            await new Promise(resolve => setTimeout(resolve, retryDelay * 1000))
+        }
     }
 };
 
@@ -36,7 +49,7 @@ async function dbInsertQuerry(table, keys, values) {
         await client.query(insertQuery, values);
     
     } catch (error) {
-        console.error('Error inserting episode log:', error.stack);
+        throw new Error(`Error inserting episode log: ${error.stack}`);
     }
 };
 
@@ -60,7 +73,7 @@ async function dbGetQuery(table, keys) {
         }
         
     } catch (error) {
-        console.error('Error retrieving episode details:', error.stack);
+        throw new Error(`Error retrieving episode details: ${error.stack}`);
     } 
 };
 
@@ -80,12 +93,38 @@ async function dbUpdateQuerry(table, key, value) {
         }
 
     } catch (error) {
-        console.error('Error updating configuration:', error.stack);
+        throw new Error(`Error updating configuration: ${error.stack}`);
+    }
+};
+
+// retry logic for database operations
+async function safeDbOperation(operation, params) {
+    const retryLimit = 5;
+    const retryDelay = 5; // Time in secounds
+    let attempts = 0;
+
+    while (attempts < retryLimit) {
+        try {
+            result = await operation(...params);
+            return result;
+
+        } catch (error) {
+            attempts++;
+            console.error(`Database operation failed on attempt ${attempts}:`, error.stack);
+
+            if (attempts >= retryLimit) {
+                console.error('Max retry attempts reached for database operation.');
+                throw new Error('Failed to perform database operation after multiple attempts');
+            }
+
+            await new Promise(resolve => setTimeout(resolve, retryDelay * 1000))
+        }
     }
 };
 
 module.exports = { connectToDatabase,
                    dbInsertQuerry, 
                    dbGetQuery,
-                   dbUpdateQuerry
+                   dbUpdateQuerry,
+                   safeDbOperation
                 };
